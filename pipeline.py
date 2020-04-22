@@ -33,18 +33,12 @@ class Pipeline:
         # self.n26.get_balance()
         # self.n26.test()
 
-        self.storage.delete_transactions()
-        self.update_data()
+        # self.storage.delete_transactions()
+        # self.update_data()
 
         # self.storage.insert_transaction(transaction=self.storage.example)
         print(self.storage.get_document_count())
-        df = self.processor.get_transactions_df()
-        self.processor.save_df(df=df)
+        # df = self.processor.get_transactions_df()
+        # self.processor.save_df(df=df)
 
-
-
-
-
-
-
-Pipeline().run()
+# Pipeline().run()

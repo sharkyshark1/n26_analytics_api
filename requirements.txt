@@ -1,3 +1,9 @@
 n26
 pymongo
 pandas
+flask
+flask_httpauth
+flask_cors
+werkzeug
+authlib
+passlib
