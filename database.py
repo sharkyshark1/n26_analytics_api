@@ -5,7 +5,7 @@ from passlib.hash import pbkdf2_sha256
 class Database:
     def __init__(self):
         self.name = 'This is the Mongo DB'
-        self.client = MongoClient()
+        self.client = MongoClient('mongodb://localhost:27017/')
         self.db = self.client.banking_database
         self.collection = self.db.banking_collection
         self.collection_users = self.db.users
@@ -59,6 +59,4 @@ class Database:
         if not pbkdf2_sha256.verify(password, user_obj['pwhash']):
             return None
         return user_obj
-
-
 

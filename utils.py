@@ -8,11 +8,11 @@ class Utils:
         self.columns = ['transaction_id', 'transaction_type', 'amount', 'created_ts', 'created_ts_dt', 'merchant_name',
                         'merchant_city', 'merchant_country', 'category', 'currency', 'original_amount',
                         'original_currency', 'exchange_rate', 'txn_condition', 'recurrent', 'partner_name',
-                        'partner_iban']
+                        'partner_iban', 'payment_scheme']
 
         self.dict_columns = ['id', 'type', 'amount', 'createdTS', 'createdTS_DT', 'merchantName', 'merchantCity',
                              'merchantCountry', 'category', 'currencyCode', 'originalAmount', 'originalCurrency',
-                             'exchangeRate', 'txnCondition', 'recurrent', 'partnerName', 'partnerIban']
+                             'exchangeRate', 'txnCondition', 'recurrent', 'partnerName', 'partnerIban', 'paymentScheme']
 
     def get_current_timestamp(self):
         now = datetime.datetime.utcnow()
@@ -22,6 +22,6 @@ class Utils:
     @staticmethod
     def convert_utc_datetime(timestamp):
         timestamp = timestamp / 1000
-        dt = datetime.datetime.fromtimestamp(timestamp).strftime('%d-%m-%Y %H:%M:%S')
+        dt = datetime.datetime.fromtimestamp(timestamp).strftime('%m-%d-%Y %H:%M:%S')
         return dt
 
