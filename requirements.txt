@@ -8,3 +8,4 @@ werkzeug
 authlib
 passlib
 xlsxwriter
+vdir

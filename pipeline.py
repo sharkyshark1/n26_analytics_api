@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import use
 use('Agg')
-import datetime
+# import datetime
 import io
 import zipfile
 
@@ -77,8 +77,9 @@ class Pipeline:
         data = data[data.index >= start_date]
         result = data.resample(aggregation_level).amount.sum() * -1
         ax = result.plot(kind=graph, figsize=(20, 10))
+        ax.set_xlabel("time")
+        ax.set_ylabel("expenditures")
         if graph == 'bar':
-            # ax.set_xlabel("x label")
             ax.set_xticklabels([str(j.day) + '-' + str(j.month) + '-' + str(j.year) for j in result.index])
         bytes_image = io.BytesIO()
         plt.savefig(bytes_image, format='png')
@@ -88,39 +89,31 @@ class Pipeline:
     def get_zip_file(self, files):
         mem_zip = io.BytesIO()
         with zipfile.ZipFile(mem_zip, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+            i = 0
             for f in files:
-                zf.writestr('blabla.png', f.read())
+                zf.writestr(str(i) + 'blabla.png', f.getvalue())
+                i+=1
+        mem_zip.seek(0)
         return mem_zip
 
     def run(self):
 
-        # self.update_data()
-        print(self.storage.get_document_count())
-        df = self.processor.get_transactions_df()
-        csv = self.get_csv(df)
-        df = self.add_date_columns(df)
-        df = self.strip_spaces(df)
-        #subset = df[df.year == 2020]
-        # print(subset[subset.month==12])
-        # balance_monthly = subset.groupby('month').mean()
-        #print(balance_monthly)
-        #for t in range(500):
-        #    print(df.iloc[t,:].merchant_name, df.iloc[t,:].category)
-
-        # analytics outcomes...
-        
-        
-        # savings = self.estimate_savings_rate(df)
-        p = self.get_time_series(df=df, aggregation_level='1M', graph='bar', start='01-01-2020')
         ''''
         rewe = df[df.merchant_name.str.contains('REWE')].sort_values(by='created_ts_dt', ascending=False)
-        rewe[['created_ts_dt', 'amount']].plot(x='created_ts_dt', y='amount', figsize=(20,10))
-        plt.savefig('rewe.png')
-        # combine files and return
-        files = [csv]
-        return files
         '''
-        zip_file = self.get_zip_file(files=[p])
+
+
+        print('Number of transactions currently persisted: ', self.storage.get_document_count())
+        # self.update_data()
+        print('Number of transactions currently persisted: ', self.storage.get_document_count())
+        df = self.processor.get_transactions_df()
+        df = self.add_date_columns(df)
+        df = self.strip_spaces(df)
+
+        # define outcomes
+        p = self.get_time_series(df=df, aggregation_level='1M', graph='bar', start='01-01-2020')
+        p2 = self.get_time_series(df=df, aggregation_level='1M', graph='bar', start='01-01-2020')
+        zip_file = self.get_zip_file(files=[p, p2])
         return zip_file
 
 

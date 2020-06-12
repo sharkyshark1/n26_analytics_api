@@ -71,7 +71,7 @@ def get_history():
     csv_string = df.to_csv(sep=';', encoding='UTF-8')
     return Response(
         csv_string,
-        mimetype="text/xlsx",
+        mimetype="text/csv",
         headers={"Content-disposition": "attachment; filename=transaction_history.csv"})
 
 
@@ -82,11 +82,6 @@ def get_analytics_pipeline():
     return Response(zip_file,
                     mimetype='application/zip',
                     headers={'Content-Disposition': 'attachment;filename=analytics.zip'})
-    '''
-    return send_file(memory_file,
-                         attachment_filename='plot.png',
-                         mimetype='image/png')
-                         '''
 
 
 if __name__ == '__main__':

@@ -27,7 +27,6 @@ class TransactionProcessor:
             processed_transaction = [modified.get(k) if (k in keys) else '-' for k in self.dict_columns]
             processed_transactions.append(processed_transaction)
         df = pd.DataFrame(processed_transactions, columns=self.columns)
-        # print('DF SHAPE', df.shape)
         return df
 
     def save_df(self, df):
