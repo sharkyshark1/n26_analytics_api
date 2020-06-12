@@ -1,7 +1,6 @@
 from database import Database
 from utils import Utils
 import pandas as pd
-pd.set_option('display.max_columns', None)
 
 
 class TransactionProcessor:
@@ -9,6 +8,7 @@ class TransactionProcessor:
         self.name = 'I am a data processor.'
         self.dict_columns = Utils().dict_columns
         self.columns = Utils().columns
+        # the path is for test purposes
         self.df_path = '/Users/sharkyshark6/Desktop/n26_df/n26_processed_df.csv'
 
     @staticmethod

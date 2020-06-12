@@ -1,8 +1,8 @@
 import os
-import datetime
 from n26.api import Api
 from n26.config import Config
 from utils import Utils
+
 
 class N26Caller:
 
@@ -34,28 +34,28 @@ class N26Caller:
         transactions = self.n26_client.get_transactions(limit=1000, from_time=start_time, to_time=timestamp_now)
         return transactions
 
+    '''
+    other n26 functions (for further features):
+    
+    print('addresses')
+    print(self.n26_client.get_addresses())
 
-    def other_functions(self):
-        '''
-        print('addresses')
-        print(self.n26_client.get_addresses())
+    print('spaces')
+    print(self.n26_client.get_spaces())
 
-        print('spaces')
-        print(self.n26_client.get_spaces())
+    print('cards')
+    print(self.n26_client.get_cards())
 
-        print('cards')
-        print(self.n26_client.get_cards())
+    print('statements')
+    print(self.n26_client.get_statements())
 
-        print('statements')
-        print(self.n26_client.get_statements())
+    print('categories')
+    print(self.n26_client.get_available_categories())
 
-        print('categories')
-        print(self.n26_client.get_available_categories())
-
-        print('stats')
-        print(self.n26_client.get_statistics())
-        # default from_time: int = 0, to_time: int = int(time.time()) * 1000)
-        '''
+    print('stats')
+    print(self.n26_client.get_statistics())
+    # default from_time: int = 0, to_time: int = int(time.time()) * 1000)
+    '''
 
 
 

@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from passlib.hash import pbkdf2_sha256
 
 
 class Database:
@@ -9,7 +8,7 @@ class Database:
         self.db = self.client.banking_database
         self.collection = self.db.banking_collection
         self.collection_users = self.db.users
-
+        '''    
         self.example = {'id': '12db367d-ed33-40cf-91ed-071f5a591651', 'userId': '812f156b-81bd-4c7b-8557-d4ff89138f10',
                         'type': 'AA', 'amount': -5.27, 'currencyCode': 'EUR', 'originalAmount': -5.27,
                         'originalCurrency': 'EUR', 'exchangeRate': 1.0, 'merchantCity': 'Berlin',
@@ -21,6 +20,7 @@ class Database:
                         'merchantCountry': 0, 'merchantCountryCode': 276, 'txnCondition': 'CARD_PRESENT',
                         'smartLinkId': '12db367d-ed33-40cf-91ed-071f5a591651',
                         'linkId': '12db367d-ed33-40cf-91ed-071f5a591651', 'confirmed': 1587211163077}
+                        '''
 
     def insert_transaction(self, transaction):
         post_id = self.collection.insert_one(transaction).inserted_id
@@ -52,11 +52,5 @@ class Database:
     def get_document_count(self):
         return self.collection.count()
 
-    def verify_user(self, selfusername, password):
-        user_obj = self.collection_users.find_one({'username': selfusername})
-        if user_obj is None:
-            return None
-        if not pbkdf2_sha256.verify(password, user_obj['pwhash']):
-            return None
-        return user_obj
+
 

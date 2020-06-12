@@ -1,5 +1,6 @@
-from pipeline import Pipeline
-from flask import Flask, request, jsonify, render_template, send_file, Response
+import dotenv
+import os
+from flask import Flask, jsonify, Response
 from flask_httpauth import HTTPBasicAuth
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,13 +8,10 @@ from n26_api import N26Caller
 from utils import Utils
 from pipeline import Pipeline
 from processing import TransactionProcessor
-import dotenv
-import os
-import pandas
-# from authorization import bp_auth
 
-# start mongo db service
+# start mongo db service before starting the flask app
 # brew services start mongodb-community@4.2
+# python3 flask_app.py
 
 dotenv.load_dotenv(".env", verbose=True)
 
@@ -22,11 +20,8 @@ auth = HTTPBasicAuth()
 CORS(app)
 
 users = {
-    'tj': generate_password_hash('testedeinpasswort')
+    os.getenv('APP_USER'): generate_password_hash(os.getenv('APP_PASSWORD'))
 }
-
-# app.register_blueprint(bp_auth)
-app.secret_key = 'ljhkgjfhdfhjghkblnm'
 
 
 @auth.verify_password
@@ -39,14 +34,20 @@ def verify_password(username, password):
 @app.route("/")
 @auth.login_required
 def hello():
-    return "Hello, %s!" % auth.username()
+    return "Hello, %s!" % auth.username(), 201
+
+
+@app.errorhandler(404)
+def own_404_page(error):
+    info = "Route does not exist --- Available routes: /balance, /recent_transactions, /update_db, /history, /analytics"
+    return jsonify(info), 404
 
 
 @app.route("/balance", methods=['GET'])
 @auth.login_required
 def display_balance():
     balance = N26Caller().get_balance()
-    return jsonify(balance)
+    return jsonify(balance), 201
 
 
 @app.route("/recent_transactions", methods=['GET'])
@@ -54,14 +55,14 @@ def display_balance():
 def display_recent_transactions():
     time = Utils().get_current_timestamp() - 3*24*60*60*1000
     transactions = N26Caller().get_recent_transactions(start_time=time)
-    return jsonify(transactions)
+    return jsonify(transactions), 201
 
 
-@app.route("/update_database", methods=['GET'])
+@app.route("/update_db", methods=['GET'])
 @auth.login_required
 def update_db():
     Pipeline().update_data()
-    return jsonify('MongoDB is up-to-date!')
+    return jsonify('MongoDB is up-to-date!'), 201
 
 
 @app.route("/history", methods=['GET', 'POST'])
@@ -72,7 +73,7 @@ def get_history():
     return Response(
         csv_string,
         mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=transaction_history.csv"})
+        headers={"Content-disposition": "attachment; filename=transaction_history.csv"}), 201
 
 
 @app.route("/analytics", methods=['GET', 'POST'])
@@ -81,7 +82,7 @@ def get_analytics_pipeline():
     zip_file = Pipeline().run()
     return Response(zip_file,
                     mimetype='application/zip',
-                    headers={'Content-Disposition': 'attachment;filename=analytics.zip'})
+                    headers={'Content-Disposition': 'attachment;filename=analytics.zip'}), 201
 
 
 if __name__ == '__main__':
