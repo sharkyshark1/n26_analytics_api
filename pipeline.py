@@ -129,7 +129,7 @@ class Pipeline:
     def run(self):
 
         print('Number of transactions currently persisted: ', self.storage.get_document_count())
-        # self.update_data()
+        self.update_data()
         print('Number of transactions currently persisted: ', self.storage.get_document_count())
         df = self.processor.get_transactions_df()
         df = self.add_date_columns(df=df)
