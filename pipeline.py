@@ -21,6 +21,11 @@ class Pipeline:
         self.processor = TransactionProcessor()
 
     def update_data(self):
+        """
+        The function queries the transaction that was added to the MongoDB at last, calls the n26 api and
+        downloads the new transactions (the delta) and adds them to the database.
+        :return:
+        """
         document_count = self.storage.get_document_count()
         print('DOC COUNT', document_count)
         if document_count == 0:
@@ -34,10 +39,6 @@ class Pipeline:
 
     @staticmethod
     def add_date_columns(df):
-        df['year'] = pd.DatetimeIndex(df['created_ts_dt']).year
-        df['month'] = pd.DatetimeIndex(df['created_ts_dt']).month
-        df['week'] = pd.DatetimeIndex(df['created_ts_dt']).week
-        df['day'] = pd.DatetimeIndex(df['created_ts_dt']).day
         df = df.set_index(pd.DatetimeIndex(df['created_ts_dt']))
         return df
 
@@ -62,7 +63,17 @@ class Pipeline:
     def get_atm(df):
         return df[df.category == 'micro-v2-atm']
 
-    def get_time_series(self, df, aggregation_level, graph, start, add_name=None):
+    def get_time_series(self, df, aggregation_level, graph, start, add_name=None) -> list:
+        """
+        The function creates a visualisation of a subset of data (df) and returns a filename and
+        the image as byte string.
+        :param: DataFrame df: A subset of the data for visualisation
+        :param: str aggregation_level: the re-sampling level (e.g. 1D, 1W, 1M, 1Y)
+        :param: str graph: Either "line" or "bar", describing the chart type.
+        :param: str start: Start date for the subset (format: %m-%d-%Y)
+         :param: str add_name: Custom string to add to filename
+        :return: list: filename, file
+        """
         data = self.get_expenditures(df).sort_index(axis=0)
         start_date = pd.to_datetime(start)
         data = data[data.index >= start_date]
@@ -97,7 +108,15 @@ class Pipeline:
         df_filtered = df[df.category.str.contains(category_string)]
         return df_filtered
 
-    def plot_category_mix(self, df, start, end):
+    def plot_category_mix(self, df, start, end) -> list:
+        """
+       The function creates a visualisation (bar chart) of a subset of the data where the bars are
+        expenditure categories.
+       :param: DataFrame df: A subset of the data for visualisation
+       :param: str start: Start date for the subset (format: %m-%d-%Y)
+       :param: str end: End date for the subset (format: %m-%d-%Y)
+       :return: list: filename, file
+       """
         data = self.get_expenditures(df).sort_index(axis=0)
         start_date = pd.to_datetime(start)
         end_date = pd.to_datetime(end)
@@ -127,7 +146,11 @@ class Pipeline:
         return mem_zip
 
     def run(self):
-
+        """
+        The run function calls different functions to update the database, processes and visualises the data, creates
+        a zip in memory.
+        :return: zip-file
+        """
         print('Number of transactions currently persisted: ', self.storage.get_document_count())
         self.update_data()
         print('Number of transactions currently persisted: ', self.storage.get_document_count())
@@ -152,19 +175,24 @@ class Pipeline:
         plot_7 = self.plot_category_mix(df=df, start='01-01-2020', end=today)
 
         df_supermarket = self.filter_by_category(df=df, category_string='micro-v2-food-groceries')
-        plot_8 = self.get_time_series(df=df_supermarket, aggregation_level='1M', graph='bar', start='10-01-2019', add_name='SUPERMARKET')
-        plot_9 = self.get_time_series(df=df_supermarket, aggregation_level='1W', graph='line', start='10-01-2019', add_name='SUPERMARKET')
-        plot_10 = self.get_time_series(df=df_supermarket, aggregation_level='1D', graph='line', start='10-01-2019', add_name='SUPERMARKET')
+        plot_8 = self.get_time_series(df=df_supermarket, aggregation_level='1M', graph='bar', start='10-01-2019',
+                                      add_name='SUPERMARKET')
+        plot_9 = self.get_time_series(df=df_supermarket, aggregation_level='1W', graph='line', start='10-01-2019',
+                                      add_name='SUPERMARKET')
+        plot_10 = self.get_time_series(df=df_supermarket, aggregation_level='1D', graph='line', start='10-01-2019',
+                                       add_name='SUPERMARKET')
 
         df_travel_transport = self.filter_by_category(df=df, category_string='micro-v2-travel-holidays')
         plot_8 = self.get_time_series(df=df_travel_transport, aggregation_level='1D', graph='line', start='10-01-2019',
                                       add_name='TRAVEL_TRANSPORT')
 
         df_rewe = self.filter_by_string(df=df, search_string='REWE')
-        plot_11 = self.get_time_series(df=df_rewe, aggregation_level='1W', graph='line', start='10-01-2019', add_name='REWE')
+        plot_11 = self.get_time_series(df=df_rewe, aggregation_level='1W', graph='line', start='10-01-2019',
+                                       add_name='REWE')
 
         df_electricity = self.filter_by_string(df=df, search_string='vivi-power GmbH')
-        plot_12 = self.get_time_series(df=df_electricity, aggregation_level='1M', graph='bar', start='10-01-2019', add_name='ELECTRICITY')
+        plot_12 = self.get_time_series(df=df_electricity, aggregation_level='1M', graph='bar', start='10-01-2019',
+                                       add_name='ELECTRICITY')
 
         output_files = [plot_0, plot_1, plot_2, plot_3, plot_4, plot_5, plot_6, plot_7, plot_8, plot_9, plot_10,
                         plot_11, plot_12]

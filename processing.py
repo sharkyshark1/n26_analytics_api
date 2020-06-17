@@ -19,6 +19,10 @@ class TransactionProcessor:
         return instance
 
     def get_transactions_df(self):
+        """
+        The function queries all transactions from MongoDB and returns a structured data frame.
+        :return: DataFrame
+        """
         processed_transactions = list()
         raw_transactions = Database().get_all_transactions()
         for transaction in raw_transactions:
